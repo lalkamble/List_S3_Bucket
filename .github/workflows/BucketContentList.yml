@@ -1,0 +1,33 @@
+name: List S3 Buckets
+
+on:
+  workflow_dispatch:
+    inputs:
+      Root_Domain_Name:
+        description: 'Select the bucket for listing files'
+        required: true
+        type: choice
+        default: 'none'
+        options:
+          - lalit1610
+          - Helloworld
+          - lalitkamble
+
+jobs:
+  list_buckets:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: <Global>
+        
+    - name: List S3 Buckets
+      run: |
+        aws s3api list-objects --bucket ${{ github.event.inputs.Root_Domain_Name }} --query 'Contents[].{Key: Key, Size: Size, LastModified: LastModified, Metadata: Metadata}'
